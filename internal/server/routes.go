@@ -2,19 +2,18 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
-
-	"fmt"
 	"time"
+
+	"plugtalk/cmd/web"
 
 	"github.com/a-h/templ"
 	"nhooyr.io/websocket"
-	"plugtalk/cmd/web"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
-
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", s.HelloWorldHandler)
 
@@ -24,8 +23,11 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	fileServer := http.FileServer(http.FS(web.Files))
 	mux.Handle("/js/", fileServer)
+	mux.Handle("/css/", fileServer)
 	mux.Handle("/web", templ.Handler(web.HelloForm()))
 	mux.HandleFunc("/hello", web.HelloWebHandler)
+	mux.HandleFunc("/about", web.AboutHandler)
+	mux.HandleFunc("/chat", web.ChatHandler)
 
 	return mux
 }
@@ -44,7 +46,6 @@ func (s *Server) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 	jsonResp, err := json.Marshal(s.db.Health())
-
 	if err != nil {
 		log.Fatalf("error handling JSON marshal. Err: %v", err)
 	}
@@ -54,7 +55,6 @@ func (s *Server) healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) websocketHandler(w http.ResponseWriter, r *http.Request) {
 	socket, err := websocket.Accept(w, r, nil)
-
 	if err != nil {
 		log.Printf("could not open websocket: %v", err)
 		_, _ = w.Write([]byte("could not open websocket"))

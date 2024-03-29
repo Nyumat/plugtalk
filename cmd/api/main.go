@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+
 	"plugtalk/internal/server"
 )
 
 func main() {
-
 	server := server.NewServer()
 
 	err := server.ListenAndServe()

@@ -27,3 +27,9 @@ tmp/
 
 # Project build
 main
+
+# Node.js
+node_modules/
+
+# Build files
+output.css
