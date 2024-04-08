@@ -131,10 +131,6 @@ func (cr *chatRoom) nickNameInUse(nick string) bool {
 // Returns a new nickname that is not already in use
 // Thread-safe with respect to the clients mutex
 func (cr *chatRoom) getNewNick() string {
-	cr.clientsMu.Lock()
-	defer cr.clientsMu.Unlock()
-
-	// If in use, append a number to the end of the nickname
 	ogNick := shared.GenerateNickname()
 	nick := ogNick
 	i := 2
