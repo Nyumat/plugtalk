@@ -75,61 +75,116 @@ templ Chat(themes []string) {
 		<head>
 			<meta charset="UTF-8"/>
 			<title>PlugTalk | Chat</title>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<link href="/css/output.css" rel="stylesheet"/>
+			<meta
+				name="viewport"
+				content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1, maximum-scale=1, user-scalable=no"
+			/>
+			<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+			<meta http-equiv="Pragma" content="no-cache"/>
+			<meta name="htmx-config" content='{"useTemplateFragments": true}'/>
+			<meta http-equiv="Expires" content="0"/>
+			<link href="https://unpkg.com/sanitize.css" rel="stylesheet"/>
+			<link href="https://unpkg.com/sanitize.css/typography.css" rel="stylesheet"/>
+			<link href="https://unpkg.com/sanitize.css/forms.css" rel="stylesheet"/>
+			<script type="module" src="/js/htmx.min.js"></script>
 			<script type="module" src="/js/theme.min.js"></script>
+			<script defer>
+        htmx.on("htmx:load", function (evt) {
+            var eleID = evt.detail.elt.parentElement.attributes["id"]
+            if (eleID != undefined && eleID.value == "message-table-tbody") {
+                // New message has arrived in chat
+
+                // Focus input when message arrives
+                document.getElementById("message-input").focus()
+
+                // Convert UTC datetime from server into local timestamp
+                var ts = evt.detail.elt.cells[0]
+                if (ts.textContent == "") {
+                    // No timestamp provided, skip
+                    return
+                }
+                var d = new Date(ts.textContent)
+                ts.innerHTML = d.toLocaleTimeString()
+            }
+        });
+    </script>
 		</head>
-		<body>
+		<body hx-ws="connect:/websocket/connect">
 			@Navbar(themes)
-			// Messages "From" Someone
-			<div class="max-w-5xl mx-auto py-12">
-				<div class="chat chat-start">
-					<div class="chat-image avatar">
-						<div class="w-10 rounded-full">
-							<img alt="Tailwind CSS chat bubble component" src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"/>
-						</div>
-					</div>
-					<div class="chat-header">
-						Obi-Wan Kenobi
-						<time class="text-xs opacity-50">12:45</time>
-					</div>
-					<div class="chat-bubble">You were the Chosen One!</div>
-					<div class="chat-footer opacity-50">
-						Delivered
-					</div>
+			<h3 class="text-xl font-bold">Your IP</h3>
+			<h2 id="ip-addr"></h2>
+			<div class="flex flex-col justify-center items-center">
+				<div id="mx-auto w-full">
+					<h3 id="users" class="text-xl font-bold">Users</h3>
 				</div>
-				// Messages "To" Someone
-				<div class="chat chat-end">
-					<div class="chat-image avatar">
-						<div class="w-10 rounded-full">
-							<img alt="Tailwind CSS chat bubble component" src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"/>
-						</div>
-					</div>
-					<div class="chat-header">
-						Anakin
-						<time class="text-xs opacity-50">12:46</time>
-					</div>
-					<div class="chat-bubble">I hate you!</div>
-					<div class="chat-footer opacity-50">
-						Seen at 12:46
-					</div>
+				<div id="users-list"></div>
+			</div>
+			// Messages "From" Someone
+			<div class="max-w-5xl mx-auto py-12" id="messages">
+				// <div class="chat chat-start">
+				// 	<div class="chat-image avatar">
+				// 		<div class="w-10 rounded-full">
+				// 			<img alt="Tailwind CSS chat bubble component" src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"/>
+				// 		</div>
+				// 	</div>
+				// 	<div class="chat-header">
+				// 		Obi-Wan Kenobi
+				// 		<time class="text-xs opacity-50">12:45</time>
+				// 	</div>
+				// 	<div class="chat-bubble">You were the Chosen One!</div>
+				// 	<div class="chat-footer opacity-50">
+				// 		Delivered
+				// 	</div>
+				// </div>
+				<div class="chat chat-start">
+					// <div class="chat-bubble">It's over Anakin, <br/>I have the high ground.</div>
+					<div id="non-author-chat"></div>
+				</div>
+				<div class="chat chat-start">
+					<div id="author-chat"></div>
+					// <div class="chat-bubble">You underestimate my power!</div>
 				</div>
 				@Input()
 			</div>
 		</body>
+		<script>
+        const tailwindColors = [
+  'bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-yellow-500',
+  'bg-purple-500', 'bg-pink-500', 'bg-indigo-500', 'bg-gray-500',
+  'text-red-500', 'text-blue-500', 'text-green-500', 'text-yellow-500',
+  'text-purple-500', 'text-pink-500', 'text-indigo-500', 'text-gray-500'
+];
+
+// Function to get a random color class
+function getRandomColorClass() {
+  const index = Math.floor(Math.random() * tailwindColors.length);
+  return tailwindColors[index];
+}
+
+// Apply a random color class to an element
+function applyRandomColor() {
+  const element = document.getElementById('nickname');
+  const colorClass = getRandomColorClass();
+  element.className = colorClass;
+}
+
+// Call the function on window load
+window.onload = applyRandomColor;
+</script>
 	</html>
 }
 
 templ Input() {
-	<div class="max-w-full flex flex-row gap-2">
+	<form class="max-w-full flex flex-row gap-2" hx-ws="send" autocomplete="off">
 		<label class="form-control w-full">
 			<div class="label">
 				<span class="label-text">Enter your message here</span>
 			</div>
-			<input type="text" placeholder="Type here" class="input input-bordered w-full"/>
+			<input type="text" placeholder="Type here" name="message" id="message-input" class="input input-bordered w-full"/>
 		</label>
-		<button class="btn btn-block max-w-20 self-end">Send</button>
-	</div>
+		<button class="btn btn-block max-w-20 self-end" value="Send" id="sent-btn" type="submit">Send</button>
+	</form>
 }
 
 templ About(themes []string) {
