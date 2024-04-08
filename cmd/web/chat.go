@@ -14,6 +14,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	chatPage := Chat(shared.Themes)
+	// secondChat := SecondChat()
 	err = chatPage.Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
