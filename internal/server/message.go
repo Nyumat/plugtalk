@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"html"
+	"log"
 	"regexp"
 	"strings"
 	"time"
@@ -27,6 +28,7 @@ const (
 // createUserListMsg creates HTML that can replace the current user list.
 // It assume the nicknames provided are already HTML escaped.
 func createUserListMsg(nicks []string) string {
+	log.Println("called user list")
 	var b strings.Builder
 	b.WriteString(`<div id="users-list">`)
 	for i := range nicks {
@@ -56,6 +58,7 @@ func createSpecialMsg(text string, class string) string {
 
 // createJoinMsg creates a message struct that can be sent to a chat room sentAt a client joins.
 func createJoinMsg(c *client, nicks []string) message {
+	log.Println("called join msg")
 	return message{
 		raw: createSpecialMsg(fmt.Sprintf("%s has joined", c.nickname), "notif") +
 			createUserListMsg(nicks),
@@ -125,22 +128,27 @@ func createChatMsg(m message) (string, string) {
 	if !validateMessageText(sanitizedMsgText) {
 		return "", ""
 	}
-	ts := m.sentAt.UTC().Format(time.RFC3339)
-	author := fmt.Sprintf(
-		// Add message to log
-		`<tbody id="message-table-tbody" hx-swap-oob="beforeend">
-			<tr><td>%s</td><td class="my-nickname">%s</td><td class="my-message">%s</td></tr>
-		</tbody>`,
-		ts, m.nickname, sanitizedMsgText, // nickname is already sanitized
+
+	// Format the timestamp into a more human-readable form if necessary
+	ts := m.sentAt.Local().Format("15:04")
+
+	// Differentiate styling between the author and non-author
+	authorHTML := fmt.Sprintf(
+		`<div class="chat chat-start" id="author-chat" hx-swap-oob="beforeend">
+			<time class="text-xs opacity-50">%s</time>
+			<span class="font-bold" id="nickname">%s</span>
+            <div>%s</div>
+        </div>`, ts, m.nickname, sanitizedMsgText,
 	)
-	nonAuthor := fmt.Sprintf(
-		// Add message to log
-		`<tbody id="message-table-tbody" hx-swap-oob="beforeend">
-			<tr><td>%s</td><td>%s</td><td>%s</td></tr>
-		</tbody>`,
-		ts, m.nickname, sanitizedMsgText,
+
+	nonAuthorHTML := fmt.Sprintf(
+		`<div class="chat chat-start" id="author-chat" hx-swap-oob="beforeend">
+			<time class="text-xs opacity-50">%s</time>
+			<span class="font-bold" id="nickname">%s</span>
+            <div>%s</div>
+        </div>`, ts, m.nickname, sanitizedMsgText,
 	)
-	return author, nonAuthor
+	return authorHTML, nonAuthorHTML
 }
 
 func (cr *chatRoom) handleMessage(m message) (string, string) {
