@@ -147,7 +147,7 @@ func Chat(themes []string) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>PlugTalk | Chat</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link href=\"/css/output.css\" rel=\"stylesheet\"><script type=\"module\" src=\"/js/theme.min.js\"></script></head><body>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>PlugTalk | Chat</title><link href=\"/css/output.css\" rel=\"stylesheet\"><meta name=\"viewport\" content=\"width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1, maximum-scale=1, user-scalable=no\"><meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\"><meta http-equiv=\"Pragma\" content=\"no-cache\"><meta name=\"htmx-config\" content=\"{&#34;useTemplateFragments&#34;: true}\"><meta http-equiv=\"Expires\" content=\"0\"><link href=\"https://unpkg.com/sanitize.css\" rel=\"stylesheet\"><link href=\"https://unpkg.com/sanitize.css/typography.css\" rel=\"stylesheet\"><link href=\"https://unpkg.com/sanitize.css/forms.css\" rel=\"stylesheet\"><script type=\"module\" src=\"/js/htmx.min.js\"></script><script type=\"module\" src=\"/js/theme.min.js\"></script><script defer>\n        htmx.on(\"htmx:load\", function (evt) {\n            var eleID = evt.detail.elt.parentElement.attributes[\"id\"]\n            if (eleID != undefined && eleID.value == \"message-table-tbody\") {\n                // New message has arrived in chat\n\n                // Focus input when message arrives\n                document.getElementById(\"message-input\").focus()\n\n                // Convert UTC datetime from server into local timestamp\n                var ts = evt.detail.elt.cells[0]\n                if (ts.textContent == \"\") {\n                    // No timestamp provided, skip\n                    return\n                }\n                var d = new Date(ts.textContent)\n                ts.innerHTML = d.toLocaleTimeString()\n            }\n        });\n    </script></head><body hx-ws=\"connect:/websocket/connect\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -155,7 +155,7 @@ func Chat(themes []string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"max-w-5xl mx-auto py-12\"><div class=\"chat chat-start\"><div class=\"chat-image avatar\"><div class=\"w-10 rounded-full\"><img alt=\"Tailwind CSS chat bubble component\" src=\"https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg\"></div></div><div class=\"chat-header\">Obi-Wan Kenobi <time class=\"text-xs opacity-50\">12:45</time></div><div class=\"chat-bubble\">You were the Chosen One!</div><div class=\"chat-footer opacity-50\">Delivered</div></div><div class=\"chat chat-end\"><div class=\"chat-image avatar\"><div class=\"w-10 rounded-full\"><img alt=\"Tailwind CSS chat bubble component\" src=\"https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg\"></div></div><div class=\"chat-header\">Anakin <time class=\"text-xs opacity-50\">12:46</time></div><div class=\"chat-bubble\">I hate you!</div><div class=\"chat-footer opacity-50\">Seen at 12:46</div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h3 class=\"text-xl font-bold\">Your IP</h3><h2 id=\"ip-addr\"></h2><div class=\"flex flex-col justify-center items-center\"><div id=\"mx-auto w-full\"><h3 id=\"users\" class=\"text-xl font-bold\">Users</h3></div><div id=\"users-list\"></div></div><div class=\"max-w-5xl mx-auto py-12\" id=\"messages\"><div class=\"chat chat-start\"><div id=\"non-author-chat\"></div></div><div class=\"chat chat-start\"><div id=\"author-chat\"></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -163,7 +163,7 @@ func Chat(themes []string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></body><script>\n        const tailwindColors = [\n  'bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-yellow-500',\n  'bg-purple-500', 'bg-pink-500', 'bg-indigo-500', 'bg-gray-500',\n  'text-red-500', 'text-blue-500', 'text-green-500', 'text-yellow-500',\n  'text-purple-500', 'text-pink-500', 'text-indigo-500', 'text-gray-500'\n];\n\n// Function to get a random color class\nfunction getRandomColorClass() {\n  const index = Math.floor(Math.random() * tailwindColors.length);\n  return tailwindColors[index];\n}\n\n// Apply a random color class to an element\nfunction applyRandomColor() {\n  const element = document.getElementById('nickname');\n  const colorClass = getRandomColorClass();\n  element.className = colorClass;\n}\n\n// Call the function on window load\nwindow.onload = applyRandomColor;\n</script></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -187,7 +187,7 @@ func Input() templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"max-w-full flex flex-row gap-2\"><label class=\"form-control w-full\"><div class=\"label\"><span class=\"label-text\">Enter your message here</span></div><input type=\"text\" placeholder=\"Type here\" class=\"input input-bordered w-full\"></label> <button class=\"btn btn-block max-w-20 self-end\">Send</button></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form class=\"max-w-full flex flex-row gap-2\" hx-ws=\"send\" autocomplete=\"off\"><label class=\"form-control w-full\"><div class=\"label\"><span class=\"label-text\">Enter your message here</span></div><input type=\"text\" placeholder=\"Type here\" name=\"message\" id=\"message-input\" class=\"input input-bordered w-full\"></label> <button class=\"btn btn-block max-w-20 self-end\" value=\"Send\" id=\"sent-btn\" type=\"submit\">Send</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
