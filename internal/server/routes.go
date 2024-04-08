@@ -15,11 +15,12 @@ import (
 
 func (s *Server) RegisterRoutes() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", s.HelloWorldHandler)
+	// mux.HandleFunc("/", s.HelloWorldHandler)
 
 	mux.HandleFunc("/health", s.healthHandler)
 
 	mux.HandleFunc("/websocket", s.websocketHandler)
+	mux.HandleFunc("/websocket/connect", s.chat.connectHandler)
 
 	fileServer := http.FileServer(http.FS(web.Files))
 	mux.Handle("/js/", fileServer)
@@ -28,6 +29,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.HandleFunc("/hello", web.HelloWebHandler)
 	mux.HandleFunc("/about", web.AboutHandler)
 	mux.HandleFunc("/chat", web.ChatHandler)
+	mux.HandleFunc("/", web.IndexHandler)
 
 	return mux
 }
